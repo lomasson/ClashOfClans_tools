@@ -1,4 +1,5 @@
 import requests
+import datetime
 import os
 
 ID_CLAN     = "208QLOJJV"
@@ -21,16 +22,22 @@ try:
 #Récuperation des données
     session = requests.Session()
     session.headers.update({'Authorization': 'Bearer ' + API})
-    data = session.get("https://api.clashofclans.com/v1/clans/%23" + ID_CLAN + "/capitalraidseasons?limit=1").json()
+    data = session.get("https://api.clashofclans.com/v1/clans/%23" + ID_CLAN + "/capitalraidseasons?limit=1").json()['items'][0]
     all_members_name = session.get("https://api.clashofclans.com/v1/clans/%23" + ID_CLAN + "/members").json()['items']
 
 #Traitement
-    old_war_members = ""
+    old_war_members = []
     if (os.path.exists(FILE_DATA)):
         with open(FILE_DATA, "r") as fichier:
             old_war_members = fichier.read().split('\n')
 
+    # DATE
+    # Convert the endTime string to a datetime object
+    end_time = datetime.datetime.strptime(data['endTime'], "%Y%m%dT%H%M%S.%fZ")
+    # Format the datetime object as "dd/mm/yyyy"
+    formatted_end_time = end_time.strftime("%d/%m/%Y")
 
+    print("Formatted endTime:", formatted_end_time)
     # PROMOTION
     print("\n\t*****PROMOTION*****")
     for member_info in all_members_name:
@@ -41,9 +48,10 @@ try:
                 print(f"{member_name}")
 
     # ECRITURE DES ACTIFS DE LA SEMAINE DANS LE FICHIER
-    with open(FILE_DATA, "w") as fichier:
-        for items in data['items'][0]['members']:
-            fichier.write(items['name'] + '\n')
+    with open(FILE_DATA, "w") as file:
+        file.write(formatted_end_time + '\n')
+        for items in data['members']:
+            file.write(items['name'] + '\n')
             old_war_members.append(items['name'])
 
 
