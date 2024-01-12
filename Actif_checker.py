@@ -32,12 +32,9 @@ try:
             old_war_members = fichier.read().split('\n')
 
     # DATE
-    # Convert the endTime string to a datetime object
     end_time = datetime.datetime.strptime(data['endTime'], "%Y%m%dT%H%M%S.%fZ")
-    # Format the datetime object as "dd/mm/yyyy"
     formatted_end_time = end_time.strftime("%d/%m/%Y")
 
-    print("Formatted endTime:", formatted_end_time)
     # PROMOTION
     print("\n\t*****PROMOTION*****")
     for member_info in all_members_name:
